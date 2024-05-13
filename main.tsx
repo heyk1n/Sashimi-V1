@@ -14,6 +14,8 @@ await fsRoutes(app, {
 	loadRoute: (path) => import("./routes/" + path),
 });
 
+console.log(app);
+
 if (import.meta.main) {
 	await app.listen();
 }

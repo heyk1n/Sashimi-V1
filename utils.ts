@@ -7,17 +7,10 @@ import { createHelpers } from "@fresh/core";
 export interface State {}
 
 export function createAPI(
-	token?: string,
+	token: string,
 	authPrefix: "Bearer" | "Bot" = "Bot",
 ): API {
-	let rest: REST;
-	if (!token) {
-		rest = new REST();
-	} else {
-		rest = new REST({ authPrefix }).setToken(token);
-	}
-
-	return new API(rest);
+	return new API(new REST({ authPrefix }).setToken(token));
 }
 export const helpers = createHelpers<State>();
 export const kv = await Deno.openKv();

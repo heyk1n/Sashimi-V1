@@ -1,5 +1,7 @@
+import { type RouteConfig } from "@fresh/core";
+
 import { setCookie, STATUS_CODE } from "@std/http";
-import { createAPI, helpers, kv } from "../../utils.ts";
+import { createAPI, helpers, kv } from "../utils.ts";
 
 export const handler = helpers.defineHandlers({
 	async GET(ctx) {
@@ -13,7 +15,7 @@ export const handler = helpers.defineHandlers({
 			const token = `sashimi_${crypto.randomUUID()}`;
 			const expire = 3_600;
 
-			const api = createAPI();
+			const api = createAPI(Deno.env.get("DISCORD_TOKEN")!);
 
 			const { access_token } = await api.oauth2.tokenExchange({
 				client_id: Deno.env.get("DISCORD_CLIENT_ID")!,
@@ -24,6 +26,8 @@ export const handler = helpers.defineHandlers({
 			});
 
 			const headers = new Headers();
+
+			headers.set("location", "/");
 			setCookie(headers, {
 				name: "token",
 				value: token,
