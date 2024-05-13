@@ -31,13 +31,13 @@ export const handler = helpers.defineHandlers({
 			});
 
 			await kv.set(["tokens", token], access_token, {
-				expireIn: expire * 1_000
+				expireIn: expire * 1_000,
 			});
 
-            return new Response(null, {
-                headers,
-                status: STATUS_CODE.Found
-            })
+			return new Response(null, {
+				headers,
+				status: STATUS_CODE.Found,
+			});
 		}
 	},
 });
