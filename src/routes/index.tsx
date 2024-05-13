@@ -1,6 +1,4 @@
-import { useSignal } from "@preact/signals";
 import { helpers } from "../utils.ts";
-import Counter from "../islands/Counter.tsx";
 
 export const handler = helpers.defineHandlers({
 	async POST(ctx) {
@@ -13,32 +11,35 @@ export const handler = helpers.defineHandlers({
 });
 
 export default helpers.definePage<typeof handler>(({ data }) => {
-	return (
-		<div class="w-dvw h-dvh bg-white p-8 font-babydoll">
-			<div class="h-full w-full grid place-items-center">
-				<div class="bg-white w-80 shadow-xl rounded-xl overflow-hidden">
-					<img class="pointer-events-none" src="/sashimi.jpg"></img>
-					<div class="bg-white px-6 py-4 space-y-3">
-						<div class="select-none space-y-1">
-							<p class="text-2xl font-semibold">Welcome!!</p>
-							<p class="text-gray-600 text-sm">
-								Sebelum bergabung, verifikasi akun kamu terlebih
-								dahulu ya! {">~<"}
-							</p>
+	if (true) {
+		return (
+			<div class="w-dvw h-dvh bg-white p-8 font-babydoll">
+				<div class="h-full w-full grid place-items-center">
+					<div class="bg-white w-80 shadow-xl rounded-xl overflow-hidden">
+						<img class="pointer-events-none" src="/sashimi.jpg">
+						</img>
+						<div class="bg-white p-6 space-y-3">
+							<div class="select-none space-y-1">
+								<p class="text-2xl font-semibold">Welcome!!</p>
+								<p class="text-gray-600 text-sm">
+									Sebelum bergabung, verifikasi akun kamu
+									terlebih dahulu ya! {">~<"}
+								</p>
+							</div>
+							<form method="POST" action="/">
+								<input
+									type="text"
+									name="code"
+									class="bg-gray-200 text-center rounded-lg w-full h-10"
+									placeholder="kitsunee"
+									value={data.code ?? ""}
+								>
+								</input>
+							</form>
 						</div>
-						<form method="POST" action="/">
-							<input
-								type="text"
-								name="code"
-								class="bg-gray-200 text-center rounded-lg w-full h-10"
-								placeholder="kitsunee"
-								value={data.code ?? ""}
-							>
-							</input>
-						</form>
 					</div>
 				</div>
 			</div>
-		</div>
-	);
+		);
+	}
 });
