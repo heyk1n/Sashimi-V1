@@ -1,5 +1,7 @@
 import { getCookies } from "@std/http";
-import { helpers } from "../utils.ts";
+import { createAPI, helpers, kv } from "../utils.ts";
+
+import Menu from "../islands/Menu.tsx";
 
 export const handler = helpers.defineHandlers({
 	async POST(ctx) {
@@ -9,11 +11,47 @@ export const handler = helpers.defineHandlers({
 		return {
 			data: {
 				code: data.get("code") as string,
+				user: {
+					avatar: cookies["avatar"],
+					username: cookies["username"],
+				},
 			},
 		};
 	},
-	GET(_ctx) {
-		return { data: { code: "test" } };
+	async GET(ctx) {
+		const token = getCookies(ctx.req.headers)["token"];
+
+		if (!token) {
+			return {
+				data: {},
+			};
+		} else {
+			const { value: accessToken } = await kv.get<string>([
+				"tokens",
+				token,
+			]);
+			const api = createAPI(accessToken!, "Bearer");
+
+			const member = await api.users.getGuildMember(
+				Deno.env.get("DISCORD_GUILD_ID")!,
+			);
+
+			const avatar = member.user!.avatar
+				? api.rest.cdn.avatar(member.user!.id, member.user!.avatar)
+				: api.rest.cdn.defaultAvatar(
+					Number((BigInt(member.user!.id) / 22n) % 6n),
+				);
+
+			return {
+				data: {
+					code: null,
+					user: {
+						avatar,
+						username: member.user!.username,
+					},
+				},
+			};
+		}
 	},
 });
 
@@ -38,7 +76,7 @@ export default helpers.definePage<typeof handler>((ctx) => {
 								name="code"
 								class="bg-gray-200 text-center rounded-lg w-full h-10"
 								placeholder="kitsunee"
-								value={ctx.data.code ?? ""}
+								value={ctx.data?.code ?? ""}
 							>
 							</input>
 						</form>
