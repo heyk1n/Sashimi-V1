@@ -8,8 +8,6 @@ export const handler = helpers.defineHandlers({
 		headers.set("location", "/");
 		deleteCookie(headers, "token", { path: "/" });
 
-		console.log(headers);
-
 		return new Response(null, {
 			headers,
 			status: STATUS_CODE.Found,

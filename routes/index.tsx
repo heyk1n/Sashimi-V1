@@ -1,5 +1,7 @@
 import { getCookies } from "@std/http";
+import { type ComponentChildren } from "preact";
 import { createAPI, helpers, kv } from "../utils.ts";
+import { OAuth2Routes, OAuth2Scopes } from "@djs/core";
 
 import Menu from "../islands/Menu.tsx";
 
@@ -10,6 +12,7 @@ export const handler = helpers.defineHandlers({
 
 		return {
 			data: {
+				authorizeUrl: null,
 				code: data.get("code") as string,
 				user: {
 					avatar: cookies["avatar"],
@@ -22,8 +25,27 @@ export const handler = helpers.defineHandlers({
 		const token = getCookies(ctx.req.headers)["token"];
 
 		if (!token) {
+			const authorizeUrl = new URL(OAuth2Routes.authorizationURL);
+			const scopes = [
+				OAuth2Scopes.GuildsMembersRead,
+				OAuth2Scopes.Identify,
+			];
+
+			authorizeUrl.searchParams.set(
+				"client_id",
+				Deno.env.get("DISCORD_CLIENT_ID")!,
+			);
+			authorizeUrl.searchParams.set("response_type", "code");
+			authorizeUrl.searchParams.set(
+				"redirect_uri",
+				Deno.env.get("DISCORD_REDIRECT_URI")!,
+			);
+			authorizeUrl.searchParams.set("scope", scopes.join(" "));
+
 			return {
-				data: {},
+				data: {
+					authorizeUrl: authorizeUrl.toString(),
+				},
 			};
 		} else {
 			const { value: accessToken } = await kv.get<string>([
@@ -44,6 +66,7 @@ export const handler = helpers.defineHandlers({
 
 			return {
 				data: {
+					authorizeUrl: null,
 					code: null,
 					user: {
 						avatar,
@@ -56,10 +79,11 @@ export const handler = helpers.defineHandlers({
 });
 
 export default helpers.definePage<typeof handler>(({ data }) => {
-	const { code, user } = data;
+	const { authorizeUrl, code, user } = data;
 	if (!user) {
 		return <p>You're not logged in</p>;
-	} else {return (
+	} else {
+		return (
 			<div class="w-dvw h-dvh bg-white font-babydoll">
 				<div class="h-full w-full relative">
 					<div class="w-full h-full grid place-items-center absolute">
@@ -76,27 +100,34 @@ export default helpers.definePage<typeof handler>(({ data }) => {
 										terlebih dahulu ya! {">~<"}
 									</p>
 								</div>
-								<form method="POST" action="/">
-									<input
-										type="text"
-										name="code"
-										class="bg-gray-200 text-center rounded-lg w-full h-10"
-										placeholder="kitsunee"
-										value={code ?? ""}
-									>
-									</input>
-								</form>
+								{user
+									? (
+										<form method="POST" action="/">
+											<input
+												type="text"
+												name="code"
+												class="bg-gray-200 text-center rounded-lg w-full h-10"
+												placeholder="kitsunee"
+												value={code ?? ""}
+											>
+											</input>
+										</form>
+									)
+									: <a href={""}></a>}
 							</div>
 						</div>
 					</div>
-					<div class="absolute top-8 right-8">
-						<Menu
-							avatar={user.avatar}
-							username={user.username}
-						>
-						</Menu>
-					</div>
+					{user && (
+						<div class="absolute top-8 right-8">
+							<Menu
+								avatar={user.avatar}
+								username={user.username}
+							>
+							</Menu>
+						</div>
+					)}
 				</div>
 			</div>
-		);}
+		);
+	}
 });
