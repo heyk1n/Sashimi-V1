@@ -1,7 +1,7 @@
 import { type RouteConfig } from "@fresh/core";
 
 import { setCookie, STATUS_CODE } from "@std/http";
-import { createAPI, helpers, kv } from "../utils.ts";
+import { createAPI, helpers, kv } from "../../utils.ts";
 
 export const handler = helpers.defineHandlers({
 	async GET(ctx) {
@@ -32,6 +32,7 @@ export const handler = helpers.defineHandlers({
 				name: "token",
 				value: token,
 				maxAge: expire,
+				path: "/",
 			});
 
 			await kv.set(["tokens", token], access_token, {

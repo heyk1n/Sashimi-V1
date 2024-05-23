@@ -60,14 +60,14 @@ export default helpers.definePage<typeof handler>(({ data }) => {
 	if (!user) {
 		return <p>You're not logged in</p>;
 	} else {return (
-			<div class="w-dvw h-dvh bg-white p-8 font-babydoll">
+			<div class="w-dvw h-dvh bg-white font-babydoll">
 				<div class="h-full w-full relative">
 					<div class="w-full h-full grid place-items-center absolute">
 						<div class="bg-white w-80 shadow-xl rounded-xl overflow-hidden">
 							<img class="pointer-events-none" src="/sashimi.jpg">
 							</img>
 							<div class="bg-white p-6 space-y-3">
-								<div class="select-none space-y-1">
+								<div class="select-none space-y-1 grid place-items-center text-center">
 									<p class="text-2xl font-semibold">
 										Welcome!!
 									</p>
@@ -89,7 +89,7 @@ export default helpers.definePage<typeof handler>(({ data }) => {
 							</div>
 						</div>
 					</div>
-					<div class="absolute top-0 right-0">
+					<div class="absolute top-8 right-8">
 						<Menu
 							avatar={user.avatar}
 							username={user.username}
