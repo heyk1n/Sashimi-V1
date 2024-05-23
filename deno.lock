@@ -16,7 +16,8 @@
       "jsr:@std/datetime@^0.224.0": "jsr:@std/datetime@0.224.0",
       "jsr:@std/encoding@0.213": "jsr:@std/encoding@0.213.1",
       "jsr:@std/encoding@^0.221.0": "jsr:@std/encoding@0.221.0",
-      "jsr:@std/encoding@^0.224.0": "jsr:@std/encoding@0.224.0",
+      "jsr:@std/encoding@^0.224.0": "jsr:@std/encoding@0.224.2",
+      "jsr:@std/encoding@^0.224.2": "jsr:@std/encoding@0.224.2",
       "jsr:@std/fmt@^0.224.0": "jsr:@std/fmt@0.224.0",
       "jsr:@std/fs@^0.221.0": "jsr:@std/fs@0.221.0",
       "jsr:@std/http@^0.224.0": "jsr:@std/http@0.224.0",
@@ -128,6 +129,9 @@
       },
       "@std/encoding@0.224.0": {
         "integrity": "efb6dca97d3e9c31392bd5c8cfd9f9fc9decf5a1f4d1f78af7900a493bcf89b5"
+      },
+      "@std/encoding@0.224.2": {
+        "integrity": "bd9ef45d6028296440005804db7fc8fcc86e72fc1a19bb77684fb39c4a613672"
       },
       "@std/fmt@0.224.0": {
         "integrity": "e20e9a2312a8b5393272c26191c0a68eda8d2c4b08b046bad1673148f1d69851"
@@ -1502,6 +1506,7 @@
     "dependencies": [
       "jsr:@fresh/core@^2.0.0-alpha.2",
       "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.2",
+      "jsr:@std/encoding@^0.224.2",
       "jsr:@std/http@^0.224.0",
       "npm:@discordjs/core@1.2.0",
       "npm:@discordjs/rest@2.3.0",

@@ -30,6 +30,7 @@
 		"@fresh/core": "jsr:@fresh/core@^2.0.0-alpha.2",
 		"@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.2",
 		"@preact/signals": "npm:@preact/signals@^1.2.3",
+		"@std/encoding": "jsr:@std/encoding@^0.224.2",
 		"@std/http": "jsr:@std/http@^0.224.0",
 		"preact": "npm:preact@^10.20.1",
 		"tailwindcss": "npm:tailwindcss@3.4.1",

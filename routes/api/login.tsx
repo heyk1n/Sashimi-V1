@@ -1,5 +1,6 @@
 import { type RouteConfig } from "@fresh/core";
 
+import { encodeBase64 } from "@std/encoding/base64";
 import { setCookie, STATUS_CODE } from "@std/http";
 import { createAPI, helpers, kv } from "../../utils.ts";
 
@@ -25,12 +26,32 @@ export const handler = helpers.defineHandlers({
 				redirect_uri: Deno.env.get("DISCORD_REDIRECT_URI")!,
 			});
 
+			const userAPI = createAPI(access_token, "Bearer");
+			const { avatar, username, id } = await userAPI.users.getCurrent();
+
 			const headers = new Headers();
 
 			headers.set("location", "/");
+
 			setCookie(headers, {
 				name: "token",
 				value: token,
+				maxAge: expire,
+				path: "/",
+			});
+
+			const encoded = encodeBase64(JSON.stringify({
+				avatar: avatar
+					? userAPI.rest.cdn.avatar(id, avatar)
+					: api.rest.cdn.defaultAvatar(
+						Number((BigInt(id) / 22n) % 6n),
+					),
+				username,
+			}));
+
+			setCookie(headers, {
+				name: "user",
+				value: encoded,
 				maxAge: expire,
 				path: "/",
 			});

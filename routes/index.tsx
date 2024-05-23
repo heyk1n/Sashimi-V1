@@ -2,8 +2,26 @@ import { getCookies } from "@std/http";
 import { type ComponentChildren } from "preact";
 import { createAPI, helpers, kv } from "../utils.ts";
 import { OAuth2Routes, OAuth2Scopes } from "@djs/core";
+import { decodeBase64 } from "@std/encoding/base64";
 
 import Menu from "../islands/Menu.tsx";
+
+const authorizeUrl = new URL(OAuth2Routes.authorizationURL);
+const scopes = [
+	OAuth2Scopes.GuildsMembersRead,
+	OAuth2Scopes.Identify,
+];
+
+authorizeUrl.searchParams.set(
+	"client_id",
+	Deno.env.get("DISCORD_CLIENT_ID")!,
+);
+authorizeUrl.searchParams.set("response_type", "code");
+authorizeUrl.searchParams.set(
+	"redirect_uri",
+	Deno.env.get("DISCORD_REDIRECT_URI")!,
+);
+authorizeUrl.searchParams.set("scope", scopes.join(" "));
 
 export const handler = helpers.defineHandlers({
 	async POST(ctx) {
@@ -12,7 +30,6 @@ export const handler = helpers.defineHandlers({
 
 		return {
 			data: {
-				authorizeUrl: null,
 				code: data.get("code") as string,
 				user: {
 					avatar: cookies["avatar"],
@@ -21,57 +38,22 @@ export const handler = helpers.defineHandlers({
 			},
 		};
 	},
-	async GET(ctx) {
+	GET(ctx) {
 		const token = getCookies(ctx.req.headers)["token"];
 
 		if (!token) {
-			const authorizeUrl = new URL(OAuth2Routes.authorizationURL);
-			const scopes = [
-				OAuth2Scopes.GuildsMembersRead,
-				OAuth2Scopes.Identify,
-			];
-
-			authorizeUrl.searchParams.set(
-				"client_id",
-				Deno.env.get("DISCORD_CLIENT_ID")!,
-			);
-			authorizeUrl.searchParams.set("response_type", "code");
-			authorizeUrl.searchParams.set(
-				"redirect_uri",
-				Deno.env.get("DISCORD_REDIRECT_URI")!,
-			);
-			authorizeUrl.searchParams.set("scope", scopes.join(" "));
-
 			return {
-				data: {
-					authorizeUrl: authorizeUrl.toString(),
-				},
+				data: {},
 			};
 		} else {
-			const { value: accessToken } = await kv.get<string>([
-				"tokens",
-				token,
-			]);
-			const api = createAPI(accessToken!, "Bearer");
-
-			const member = await api.users.getGuildMember(
-				Deno.env.get("DISCORD_GUILD_ID")!,
-			);
-
-			const avatar = member.user!.avatar
-				? api.rest.cdn.avatar(member.user!.id, member.user!.avatar)
-				: api.rest.cdn.defaultAvatar(
-					Number((BigInt(member.user!.id) / 22n) % 6n),
-				);
+			const user = getCookies(ctx.req.headers)["user"];
 
 			return {
 				data: {
-					authorizeUrl: null,
 					code: null,
-					user: {
-						avatar,
-						username: member.user!.username,
-					},
+					user: JSON.parse(
+						new TextDecoder().decode(decodeBase64(user).buffer),
+					),
 				},
 			};
 		}
@@ -79,7 +61,7 @@ export const handler = helpers.defineHandlers({
 });
 
 export default helpers.definePage<typeof handler>(({ data }) => {
-	const { authorizeUrl, code, user } = data;
+	const { code, user } = data;
 	return (
 		<div class="w-dvw h-dvh bg-white font-babydoll">
 			<div class="h-full w-full relative">
@@ -112,8 +94,10 @@ export default helpers.definePage<typeof handler>(({ data }) => {
 								)
 								: (
 									<div class="w-full grid place-items-center">
-										<a href={authorizeUrl}>
-											<p class="bg-yellow-200 px-4 py-2 rounded-full select-none">Login with Discord</p>
+										<a href={authorizeUrl.toString()}>
+											<p class="bg-yellow-200 px-4 py-2 rounded-full select-none">
+												Login with Discord
+											</p>
 										</a>
 									</div>
 								)}

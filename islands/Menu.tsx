@@ -8,31 +8,26 @@ export default function (
 	if (!menuIsOpened) {
 		return (
 			<button onClick={() => setMenuOpened(true)}>
-				<img class="w-16 h-16 rounded-full" src={avatar}></img>
+				<img class="w-12 h-12 rounded-full" src={avatar}></img>
 			</button>
 		);
 	} else {
 		return (
-			<div>
-				<div class="bg-white rounded-3xl shadow-lg px-7 py-5 space-y-4 font-babydoll relative float-right">
-					<div class="space-x-5 bg-slate-400">
-						<div class="grid place-items-center h-10 float-left">
-							<p class="text-xl font-semibold">
-								{username ?? "username"}
-							</p>
+			<div class="flex space-x-6">
+				<button
+					class="bg-white w-10 h-10 rounded-full shadow-xl place-self-center"
+					onClick={() => setMenuOpened(false)}
+				>
+				</button>
+				<div class="bg-white rounded-2xl shadow-lg p-4 min-w-56 font-babydoll space-y-2">
+					<div class="flex space-x-4 place-content-center">
+						<img class="w-12 h-12 rounded-full" src={avatar}></img>
+						<div>
+							<p>Logged in as</p>
+							<p class="text-lg font-semibold">{username}</p>
 						</div>
-						<img
-							class="rounded-full w-10 h-10 float-right"
-							src={avatar}
-						>
-						</img>
-					</div>
-					<div class="grid place-items-center w-full">
-						<a
-							href="/api/logout"
-							class="text-sm text-red-600"
-						>
-							Log Out
+						<a href="/api/logout" class="place-self-center">
+							<p class="text-red-500">Log Out</p>
 						</a>
 					</div>
 				</div>
