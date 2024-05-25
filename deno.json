@@ -27,7 +27,7 @@
 	"imports": {
 		"@djs/core": "npm:@discordjs/core@1.2.0/http-only",
 		"@djs/rest": "npm:@discordjs/rest@2.3.0",
-		"@fresh/core": "jsr:@fresh/core@^2.0.0-alpha.2",
+		"@fresh/core": "jsr:@fresh/core@^2.0.0-alpha.11",
 		"@fresh/plugin-tailwind": "jsr:@fresh/plugin-tailwind@^0.0.1-alpha.2",
 		"@preact/signals": "npm:@preact/signals@^1.2.3",
 		"@std/encoding": "jsr:@std/encoding@^0.224.2",

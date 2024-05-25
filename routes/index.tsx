@@ -1,66 +1,43 @@
+import { page } from "@fresh/core";
 import { getCookies } from "@std/http";
 import { type ComponentChildren } from "preact";
-import { createAPI, helpers, kv } from "../utils.ts";
-import { OAuth2Routes, OAuth2Scopes } from "@djs/core";
+import { authorizeUrl, createAPI, define, kv } from "../utils.ts";
 import { decodeBase64 } from "@std/encoding/base64";
 
 import Menu from "../islands/Menu.tsx";
 
-const authorizeUrl = new URL(OAuth2Routes.authorizationURL);
-const scopes = [
-	OAuth2Scopes.GuildsMembersRead,
-	OAuth2Scopes.Identify,
-];
-
-authorizeUrl.searchParams.set(
-	"client_id",
-	Deno.env.get("DISCORD_CLIENT_ID")!,
-);
-authorizeUrl.searchParams.set("response_type", "code");
-authorizeUrl.searchParams.set(
-	"redirect_uri",
-	Deno.env.get("DISCORD_REDIRECT_URI")!,
-);
-authorizeUrl.searchParams.set("scope", scopes.join(" "));
-
-export const handler = helpers.defineHandlers({
+export const handler = define.handlers({
 	async POST(ctx) {
 		const data = await ctx.req.formData();
 		const cookies = getCookies(ctx.req.headers);
 
-		return {
-			data: {
-				code: data.get("code") as string,
-				user: {
-					avatar: cookies["avatar"],
-					username: cookies["username"],
-				},
+		return page({
+			code: data.get("code") as string,
+			user: {
+				avatar: cookies["avatar"],
+				username: cookies["username"],
 			},
-		};
+		});
 	},
 	GET(ctx) {
 		const token = getCookies(ctx.req.headers)["token"];
 
 		if (!token) {
-			return {
-				data: {},
-			};
+			return page({ code: null, user: null });
 		} else {
 			const user = getCookies(ctx.req.headers)["user"];
 
-			return {
-				data: {
-					code: null,
-					user: JSON.parse(
-						new TextDecoder().decode(decodeBase64(user).buffer),
-					),
-				},
-			};
+			return page({
+				code: null,
+				user: JSON.parse(
+					new TextDecoder().decode(decodeBase64(user).buffer),
+				),
+			});
 		}
 	},
 });
 
-export default helpers.definePage<typeof handler>(({ data }) => {
+export default define.page<typeof handler>(({ data }) => {
 	const { code, user } = data;
 	return (
 		<div class="w-dvw h-dvh bg-white font-babydoll">
